@@ -1,7 +1,6 @@
 FROM centos:7
 MAINTAINER linostar
 LABEL Description="Configure and run Anope 2 IRC Services"
-ENV SERVER_IP="127.0.0.1"
 RUN yum update
 RUN yum install -y sudo gcc gcc-c++ make which git cmake sendmail sendmail-cf m4
 RUN adduser --system --home /var/ircd --shell /bin/bash ircd
@@ -18,5 +17,6 @@ RUN chown -R ircd /var/ircd
 RUN sed -i "s/server_ip_here/$SERVER_IP/g" services.conf
 WORKDIR /etc/mail
 RUN echo "localhost" >> local-host-names; ./make
-USER ircd
-ENTRYPOINT ["/var/ircd/services/bin/services"]
+WORKDIR /usr/bin
+COPY start_services.sh ./
+ENTRYPOINT /bin/bash /usr/bin/start_services.sh
