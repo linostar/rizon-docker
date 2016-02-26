@@ -14,7 +14,6 @@ RUN make && make install
 WORKDIR /var/ircd/services/conf
 COPY services.conf ./
 RUN chown -R ircd /var/ircd
-RUN sed -i "s/server_ip_here/$SERVER_IP/g" services.conf
 WORKDIR /etc/mail
 RUN echo "localhost" >> local-host-names; ./make
 WORKDIR /usr/bin
