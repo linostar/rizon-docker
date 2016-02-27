@@ -12,8 +12,8 @@ RUN ./Config -nointro -quick
 WORKDIR build
 RUN make && make install
 WORKDIR /var/ircd/services/conf
-COPY services.conf ./
-RUN chown -R ircd /var/ircd
+COPY services.conf owner.conf acid_bots.conf config.sh ./
+RUN cat owner.conf acid_bots.conf >> services.conf; rm config.sh; chown -R ircd /var/ircd
 WORKDIR /etc/mail
 RUN echo "localhost" >> local-host-names; ./make
 WORKDIR /usr/bin
