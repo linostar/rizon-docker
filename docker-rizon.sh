@@ -3,9 +3,10 @@
 function build_all {
   cp config.sh plexus4/
   cp config.sh anope2/
+  cp config.sh acid2/
   docker build -t plexus4 ./plexus4
   docker build -t anope2 ./anope2
-  rm plexus4/config.sh anope2/config.sh
+  rm plexus4/config.sh anope2/config.sh acid2/config.sh
   echo "Containers built."
 }
 
@@ -39,4 +40,6 @@ if [ $# -eq 1 ]; then
   fi
 else
   echo "No args provided."
+  exit 65
 fi
+exit 0
