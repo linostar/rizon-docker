@@ -12,15 +12,8 @@ WORKDIR /var/ircd/acid
 RUN git clone http://gitlab.com/rizon/pyva.git pyva/libpyva
 RUN sed -i 's/^py-dom-xpath.*//' pyva/requirements.txt; pip install -r pyva/requirements.txt
 RUN wget 'http://py-dom-xpath.googlecode.com/files/py-dom-xpath-0.1.tar.gz'; tar zxf py-dom-xpath-0.1.tar.gz; cd py-dom-xpath-0.1; python setup.py install; cd ..; rm -rf py-dom-xpath-0.1*
-COPY acidictive.yml pyva.yml pypsd.yml config.sh ./
+COPY acidictive.yml pyva.yml pypsd.yml ./
 COPY make.properties pyva/libpyva/pyva-native/
 RUN mvn install
 RUN ln -s pyva/libpyva/pyva-native/libpyva.so libpyva.so
-RUN rm -rf /var/lib/mysql; mkdir /var/lib/mysql; chown mysql /var/lib/mysql
-USER mysql
-RUN mysql_install_db
-USER root
-RUN mysql -u root -e "create database acidcore; create database pypsd; grant all privileges on acidcore.* to 'acid'@'localhost' identified by 'moo'; grant all privileges on pypsd.* to 'acid'@'localhost' identified by 'moo'; flush privileges;"
-RUM mysql -u root -D acidcore < acid/acidcore.sql; mysql -u root -D acidcore -e "insert into access values (\"`./config.sh OWNER_NAME`\", '1', '');"
-RUN rm config.sh
 ENTRYPOINT /bin/bash /usr/bin/start_acid.sh
