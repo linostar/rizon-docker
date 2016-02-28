@@ -1,6 +1,7 @@
 FROM centos:7
 MAINTAINER linostar
-LABEL Description="Configure and run Anope 2 IRC Services"
+LABEL Description="Configure and run Anope 2 IRC Services" \
+      Warning="This container depends on external provision files and cannot be built on its own"
 RUN yum update
 RUN yum install -y sudo gcc gcc-c++ make which git cmake sendmail sendmail-cf m4 crontabs
 RUN adduser --system --home /var/ircd --shell /bin/bash ircd
@@ -12,7 +13,8 @@ RUN ./Config -nointro -quick
 WORKDIR build
 RUN make && make install
 WORKDIR /var/ircd/services/conf
-COPY services.conf owner.conf acid_bots.conf config.sh ./
+COPY services.conf owner.conf acid_bots.conf moo.conf config.sh ./
+RUN sed -i "s/___owner_name___/`grep OWNER_NAME config.sh | cut -d = -f2`/g" owner.conf
 RUN cat owner.conf acid_bots.conf >> services.conf; rm config.sh; chown -R ircd /var/ircd
 WORKDIR /etc/mail
 RUN echo "localhost" >> local-host-names; ./make

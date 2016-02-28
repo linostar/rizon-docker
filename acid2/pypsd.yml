@@ -1,0 +1,85 @@
+services: 
+  # If you have Anope1.x, set this to 1
+  # If you have Anope2.x, set this to 2
+  anope_major: 2
+
+control:
+  nick: Acidictive
+  # what should commands be prefixed by?
+  prefix: .
+  channel: "#a"
+
+logging:
+  # values are (and inclusive of items below it):
+  # DEBUG
+  # INFO
+  # WARNING
+  # ERROR
+  # CRITICAL
+  level: DEBUG
+  logfile: py.log
+
+database:
+  host: 127.0.0.1
+  user: acid
+  passwd: moo
+  db: pypsd
+
+ctcp:
+  nick: py-ctcp
+
+vhost:
+  channel: "#vhost"
+  logchan: "#services"
+  nick: py-moo
+
+registration:
+  nick: Welcome
+  text: |
+      Hi, I am a Rizon Help Bot! If this is your first channel, welcome! If not, you can ignore me.
+      Rizon Services have many settings, you should complete the following Rizon University courses:
+      Channel Management 101 - http://s.rizon.net/chan101
+      Channel Management 102 - http://s.rizon.net/chan102
+      Adv Channel Modes  300 - http://s.rizon.net/chan300
+      After reading these, you should be all set, but feel free to join #help if you get stuck. Thanks for flying Rizon!
+
+listbots:
+  nick: FunServ
+
+internets:
+  nick: Internets
+  channel: "#a"
+  bing_appid: xxx
+  key_openweathermap: xxx
+  key_wordnik: xxx
+  key_ipinfodb: xxx
+  user_bitly: xxx
+  key_bitly: xxx
+  key_lastfm: xxx
+  key_fml: xxx
+  key_wolframalpha: xxx
+  key_steam: xxx
+  key_google: xxx
+  outputlimit: 10
+
+limitserv:
+  nick: Limitserv
+  channel: "#a"
+
+quotes:
+  nick: Quotes
+  channel: "#a"
+  outputlimit: 20
+
+esim:
+  nick: e-Sim
+  channel: "#a"
+
+erepublik:
+  nick: eRepublik
+  channel: "#a"
+
+trivia:
+  nick: Trivia
+  channel: "#a"
+  maxrounds: 100

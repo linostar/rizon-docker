@@ -1,0 +1,110 @@
+clients:
+ -
+  nick: py-moo
+  user: moo
+  host: vhosts.rizon.net
+  vhost: vhosts.rizon.net
+  name: Network Services Bot
+  nspass: moo
+  modes: USaiopqrx
+  channels: [py, vhost, debug]
+ -
+  nick: py-ctcp
+  user: ctcp
+  host: ctcp-scanner.rizon.net
+  vhost: ctcp-scanner.rizon.net
+  name: Network Services Bot
+  nspass: moo
+  modes: USaiopqrx
+  channels: [ py ]
+  version: Rizon CTCP Version Checker
+ -
+  nick: Welcome
+  user: welcome
+  host: services.rizon.net
+  vhost: services.rizon.net
+  name: Network Services Bot
+  nspass: moo
+  modes: ip
+  channels: [ py ]
+ -
+  nick: FunServ
+  user: fun
+  host: services.rizon.net
+  vhost: services.rizon.net
+  name: FunServ information service
+  nspass: moo
+  modes: ip
+  channels: [ py ]
+ -
+  nick: Internets
+  user: internets
+  host: services.rizon.net
+  vhost: services.rizon.net
+  name: Network Services Bot
+  nspass: moo
+  modes: ipoU
+  channels: [ py ]
+ -
+  nick: LimitServ
+  user: limit
+  host: limitserv.rizon.net
+  vhost: limitserv.rizon.net
+  name: Network Services Bot
+  nspass: moo
+  modes: ipoU
+  channels: [ py ]
+ -
+  nick: Quotes
+  user: quotes
+  host: quotes.rizon.net
+  vhost: quotes.rizon.net
+  name: Quotes
+  nspass: moo
+  modes: ipoU
+  channels: [ py ]
+ -
+  nick: Trivia
+  user: trivia
+  host: trivia.rizon.net
+  vhost: trivia.rizon.net
+  name: Trivia
+  nspass: moo
+  modes: ipoU
+  channels: [ py ]
+ -
+  nick: e-Sim
+  user: esim
+  host: e-sim.org
+  vhost: e-sim.org
+  name: eSim
+  nspass: moo
+  modes: ipoU
+  channels: [ py ]
+ -
+  nick: eRepublik
+  user: erepublik
+  host: erepublik.rizon.net
+  vhost: erepublik.rizon.net
+  name: eRepublik
+  nspass: moo
+  modes: ipoU
+  channels: [ py ]
+
+path:
+ - "./pyva/libpyva/pyva/src/main/python"
+ - "./pyva/pyva/src/main/python/"
+
+plugins:
+ - control
+ - moo
+ - ctcp
+ - registration
+ - listbots
+ - internets
+ - limitserv
+ - quotes
+ - trivia
+ - esim
+ - erepublik
+

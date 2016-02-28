@@ -1,6 +1,7 @@
 FROM centos:7
 MAINTAINER linostar
-LABEL Description="Configure and run acid bots"
+LABEL Description="Configure and run acid bots" \
+      Warning="This container depends on external provision files and cannot be built on its own"
 RUN yum update
 RUN yum install -y epel-release
 RUN yum install -y sudo which wget gcc gcc-c++ make python python-devel python-pip git which maven2 mariadb mariadb-devel mariadb-server java-1.8.0-openjdk java-1.8.0-openjdk-devel
@@ -22,4 +23,4 @@ USER root
 RUN mysql -u root -e "create database acidcore; create database pypsd; grant all privileges on acidcore.* to 'acid'@'localhost' identified by 'moo'; grant all privileges on pypsd.* to 'acid'@'localhost' identified by 'moo'; flush privileges;"
 RUM mysql -u root -D acidcore < acid/acidcore.sql; mysql -u root -D acidcore -e "insert into access values (\"`grep OWNER_NAME config.sh | cut -d = -f2`\", '1', '');"
 RUN rm config.sh
-ENTRYPOINT /usr/bin/start_acid.sh
+ENTRYPOINT /bin/bash /usr/bin/start_acid.sh

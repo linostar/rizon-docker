@@ -1,0 +1,115 @@
+# Acidictive 4 configuration file
+# Copy this to ../acidictive.yml
+
+debug: true
+
+serverinfo:
+  name: acid.rizon.net
+  description: (H) Rizon Services
+  id: 97S
+  network: Rizon
+  cloakkeys:
+   - "SuperFancyKey1"
+   - "SuperFancyKey2"
+   - "SuperFancyKey3"
+
+uplink:
+  host: 127.0.0.1
+  pass: password
+  port: 6633
+  ssl: false
+
+clients:
+ -
+  nick: Acidictive
+  user: services
+  # There's no reason you'd ever need to set host/vhost to different values
+  host: services.rizon.net
+  vhost: services.rizon.net
+  # aka gecos/ircname/realname
+  name: Network Service
+  nspass: moo
+  modes: Uoip
+  channels: [ cmdlogchan ]
+  commands:
+   -
+    name: access
+    privilege: G
+    clazz: net.rizon.acid.commands.Access
+   -
+    name: gc
+    privilege: Z
+    clazz: net.rizon.acid.commands.GC
+   -
+    name: help
+    privilege: none
+    clazz: net.rizon.acid.commands.Help
+   -
+    name: plugins
+    privilege: Z
+    clazz: net.rizon.acid.commands.Plugins
+   -
+    name: reload
+    privilege: Z
+    clazz: net.rizon.acid.commands.Reload
+   -
+    name: removeclient
+    privilege: Z
+    clazz: net.rizon.acid.commands.RemoveClient
+   -
+    name: shutdown
+    privilege: Z
+    clazz: net.rizon.acid.commands.Shutdown
+   -
+    name: stats
+    privilege: b
+    channels: [cmdlogchan]
+    clazz: net.rizon.acid.commands.Stats
+
+general:
+  control: Acidictive
+  ulines: [services.rizon.net]
+  command_prefix: .
+  # Address to send e-mail from
+  email_from: acid@rizon.net
+  # SMTP server to send e-mail from
+  email_smtp: localhost
+  # Target e-mail for security alerts
+  email_securityemail: nobody@rizon.net
+  # Service which operwalls message with akills
+  akillserv: Acidictive
+
+database:
+ -
+  name: acidcore
+  host: jdbc:mysql://127.0.0.1:3306/acidcore
+  user: acid
+  pass: moo
+
+plugins:
+ - pyva.core
+ - pyva.pyva
+
+channel:
+ -
+  # logchan for all privmsg commands to the Acidictive pseudoclient
+  name: cmdlogchan
+  channel: "#a"
+ -
+  # pypsd logging/output channel
+  name: py
+  channel: "#a"
+
+access_preset:
+ -
+  name: [SO, 4]
+  privileges: abcdefghijklmnop
+ -
+  name: [CSO, 3]
+  privileges: abcdefghijklmnopuI
+ -
+  name: [SA, 2]
+  privileges: abcdefghijklmnopqrstuvwxyzABCDEFI
+ -
+  name: [SRA, 1]
+  privileges: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ

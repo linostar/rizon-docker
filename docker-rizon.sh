@@ -6,6 +6,7 @@ function build_all {
   cp config.sh acid2/
   docker build -t plexus4 ./plexus4
   docker build -t anope2 ./anope2
+  docker build -t acid_anope2 ./acid2
   rm plexus4/config.sh anope2/config.sh acid2/config.sh
   echo "Containers built."
 }
@@ -13,16 +14,17 @@ function build_all {
 function start_all {
   docker run -dit -p 6660-6670:6660-6670 -p 7000:7000 -p 6697:6697 -p 9999:9999 --name plexus4 plexus4
   docker run -dit --name anope2 anope2
+  docker run -dit --name acid_anope2 acid_anope2
   echo "Containers started."
 }
 
 function stop_all {
-  docker stop anope2 plexus4
+  docker stop acid_anope2 anope2 plexus4
   echo "Containers stopped."
 }
 
 function delete_all {
-  docker rm -f anope2 plexus4
+  docker rm -f acid_anope2 anope2 plexus4
   echo "Deleting completed."
 }
 
