@@ -20,7 +20,7 @@ logging:
   logfile: py.log
 
 database:
-  host: 127.0.0.1
+  host: ___mysql_ip___
   user: acid
   passwd: moo
   db: pypsd
