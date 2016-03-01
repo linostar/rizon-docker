@@ -82,7 +82,7 @@ general:
 database:
  -
   name: acidcore
-  host: jdbc:mysql://___mysql_ip___:___mysql_port___/acidcore
+  host: jdbc:mysql://127.0.0.1:3306/acidcore
   user: acid
   pass: moo
 
