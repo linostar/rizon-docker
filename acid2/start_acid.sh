@@ -1,7 +1,6 @@
 #! /bin/bash
 
-export LD_PRELOAD=
-sudo -u mysql /usr/libexec/mysqld &
+sleep 5
 export LD_PRELOAD=/usr/lib64/libpython2.7.so
-sudo -u ircd /var/ircd/acid/run.sh
+cd /var/ircd/acid; ./run.sh
 read

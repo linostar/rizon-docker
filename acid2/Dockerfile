@@ -4,7 +4,7 @@ LABEL Description="Configure and run acid bots" \
       Warning="This container depends on external provision files and cannot be built on its own"
 RUN yum update
 RUN yum install -y epel-release
-RUN yum install -y sudo which wget gcc gcc-c++ make python python-devel python-pip git which maven2 mariadb mariadb-devel mariadb-server java-1.8.0-openjdk java-1.8.0-openjdk-devel
+RUN yum install -y sudo which wget gcc gcc-c++ make python python-devel python-pip git which maven2 mariadb mariadb-devel java-1.8.0-openjdk java-1.8.0-openjdk-devel
 RUN adduser --system --home /var/ircd --shell /bin/bash ircd
 COPY start_acid.sh /usr/bin
 RUN mkdir -p /var/ircd; git clone http://gitlab.com/rizon/acid.git; mv acid /var/ircd/
