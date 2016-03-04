@@ -6,7 +6,7 @@ debug: true
 serverinfo:
   name: acid.rizon.net
   description: (H) Rizon Services
-  id: 97S
+  id: 17S
   network: Rizon
   cloakkeys:
    - "SuperFancyKey1"

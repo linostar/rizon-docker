@@ -4,19 +4,20 @@ function build_all {
   cp config.sh plexus4/
   cp config.sh anope2/
   cp config.sh mysqld/
+  cp config.sh acid2/
   docker build -t plexus4 ./plexus4
   docker build -t anope2 ./anope2
   docker build -t acid_anope2 ./acid2
   docker build -t db ./mysqld
-  rm plexus4/config.sh anope2/config.sh mysqld/config.sh
+  rm plexus4/config.sh anope2/config.sh mysqld/config.sh acid2/config.sh
   echo "Containers built."
 }
 
 function start_all {
-  docker run -dit -p 6660-6670:6660-6670 -p 7000:7000 -p 6697:6697 -p 9999:9999 --name plexus4 plexus4
-  docker run -dit --name anope2 anope2
-  docker run -dit -e MYSQL_ALLOW_EMPTY_PASSWORD=yes --name db db
-  docker run -dit --link db:db --name acid_anope2 acid_anope2
+  docker run -dit -p 6660-6670:6660-6670 -p 7000:7000 -p 6697:6697 -p 9999:9999 -p 6633:6633 --name plexus4 plexus4
+  docker run -dit --name anope2 --net=container:plexus4 anope2
+  docker run -dit -e MYSQL_ALLOW_EMPTY_PASSWORD=yes --name db --net=container:plexus4 db
+  docker run -dit --name acid_anope2 --net=container:plexus4 acid_anope2
   echo "Containers started."
 }
 
