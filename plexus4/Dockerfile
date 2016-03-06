@@ -3,7 +3,7 @@ MAINTAINER linostar
 LABEL Description="Configure and run Plexus4 IRC daemon" \
       Warning="This container depends on external provision files and cannot be built on its own"
 RUN yum update -y
-RUN yum install -y sudo gcc git openssl openssl-devel openssl-libs autogen autoconf automake which libtool libtool-ltdl libtool-ltdl-devel byacc flex flex-devel
+RUN yum install -y sudo gcc git openssl openssl-devel openssl-libs autogen autoconf automake which libtool libtool-ltdl libtool-ltdl-devel byacc flex flex-devel nano mlocate
 RUN adduser --system --home /var/ircd --shell /bin/bash ircd
 RUN mkdir -p /var/ircd; git clone http://gitlab.com/rizon/plexus4.git
 WORKDIR plexus4

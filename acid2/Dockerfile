@@ -3,7 +3,7 @@ MAINTAINER linostar
 LABEL Description="Configure and run acid bots" \
       Warning="This container depends on external provision files and cannot be built on its own"
 RUN apt-get update; apt-get upgrade -y
-RUN apt-get install -y sudo wget gcc g++ make git maven2 mysql-client libmysqld-dev openjdk-8-jdk openjdk-7-jdk python python-dev libpython-dev python-pip
+RUN apt-get install -y sudo wget gcc g++ make git maven2 mysql-client libmysqld-dev openjdk-8-jdk openjdk-7-jdk python python-dev libpython-dev python-pip nano mlocate
 RUN update-ca-certificates -f
 RUN adduser --system --home /var/ircd --shell /bin/bash ircd
 RUN mkdir -p /var/ircd; git clone http://gitlab.com/rizon/acid.git /var/ircd/acid
