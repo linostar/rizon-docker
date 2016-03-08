@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sudo -u ircd /var/ircd/services/bin/services
+/var/ircd/services/services
 /bin/bash

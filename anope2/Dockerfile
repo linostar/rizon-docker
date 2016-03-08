@@ -19,6 +19,5 @@ RUN cat owner.conf acid_bots.conf >> services.conf; rm config.sh; chown -R ircd 
 COPY anope.db /var/ircd/services/data/
 WORKDIR /etc/mail
 RUN echo "localhost" >> local-host-names; ./make
-WORKDIR /usr/bin
-COPY start_services.sh ./
+COPY start_services.sh /usr/bin
 ENTRYPOINT /bin/bash /usr/bin/start_services.sh
