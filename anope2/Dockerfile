@@ -15,8 +15,9 @@ RUN make && make install
 WORKDIR /var/ircd/services/conf
 COPY services.conf owner.conf acid_bots.conf moo.conf config.sh ./
 RUN source /var/ircd/services/conf/config.sh; sed -i "s/___owner_name___/$OWNER_NAME/g" owner.conf
-RUN cat owner.conf acid_bots.conf >> services.conf; rm config.sh; chown -R ircd /var/ircd
+RUN cat owner.conf acid_bots.conf >> services.conf; chown -R ircd /var/ircd
 COPY anope.db /var/ircd/services/data/
+RUN source /var/ircd/services/conf/config.sh; sed -i "s/___owner_name___/$OWNER_NAME/g;s/___owner_password___/`echo -n $OWNER_PASSWORD | base64`/g" /var/ircd/services/data/anope.db; rm config.sh
 WORKDIR /etc/mail
 RUN echo "localhost" >> local-host-names; ./make
 COPY start_services.sh /usr/bin
