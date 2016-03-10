@@ -4,12 +4,12 @@ function build_all {
   cp config.sh plexus4/
   cp config.sh anope2/
   cp config.sh mysqld/
-  cp config.sh acid2/
+  cp config.sh acid/
   docker build -t plexus4 ./plexus4
   docker build -t anope2 ./anope2
   docker build -t db ./mysqld
-  docker build -t acid_anope2 ./acid2
-  rm plexus4/config.sh anope2/config.sh mysqld/config.sh acid2/config.sh
+  docker build -t acid_anope2 ./acid
+  rm plexus4/config.sh anope2/config.sh mysqld/config.sh acid/config.sh
   echo "Containers built."
 }
 

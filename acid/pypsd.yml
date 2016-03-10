@@ -1,7 +1,7 @@
 services: 
   # If you have Anope1.x, set this to 1
   # If you have Anope2.x, set this to 2
-  anope_major: 2
+  anope_major: ___anope_version___
 
 control:
   nick: Acidictive
