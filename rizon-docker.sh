@@ -13,44 +13,45 @@ function build_all {
   echo "Containers built."
 }
 
-# Example: build("ircd", "plexus4")
+# Example: build ircd plexus4
 function build {
 	case "$1" in
 	ircd)
-		if [ $2 -eq "plexus3" -o $2 -eq "plexus4" ]; then
+		if [ $2 = "plexus3" -o $2 = "plexus4" ]; then
 			cp config.sh "${2}/"
 			docker build -t $2 "./$2"
 			rm "${2}/config.sh"
-			echo "Container \'$2\' is built."
+			echo "Container '$2' is built."
 		else
-			echo "Error: container \'$2\' does not exist."
+			echo "Error: container '$2' does not exist."
 		fi
 		;;
 	esac
 }
 
-# Example: start("ircd", 0, "plexus4")
+# Example: start ircd 0 plexus4
 function start {
 	case "$1" in
 	ircd)
-		if [ $3 -eq "plexus3" -o $3 -eq "plexus4" ]; then
-			name = "server_$2_ircd"
+		if [ $3 = "plexus3" -o $3 = "plexus4" ]; then
+			name="server_$2_ircd"
 			docker run -dit -p "666${2}:666${2}" --name $name $3
-			echo "Container \'$name\' started."
+			echo "Container '$name' started."
 		else
-			echo "Error: \'$3\' is not a supported ircd type."
+			echo "Error: '$3' is not a supported ircd type."
 		fi
 		;;
 	esac
 }
 
-# Example: stop("ircd", 0)
+# Example: stop ircd 0
 function stop {
-    name = "$server_$2_$1"
-    if [ echo "ircd services acid moo users" | grep -q "\b$1\b" ]; then
+    name="server_$2_$1"
+    echo "ircd services acid moo users" | grep -q "\b$1\b"
+	if [ $? -eq 0 ]; then
         docker stop $name
-        echo "Container \'$name\' stopped."
-    elif [ $1 -eq "server" ]; then
+        echo "Container '$name' stopped."
+    elif [ $1 = "server" ]; then
         if [ $2 -gt 0 ]; then
             if [ $SERVER_0_USERS -gt 0 ]; then
                 docker stop server_0_users
@@ -61,7 +62,7 @@ function stop {
             if [ $SERVER_0_MOO -eq 1 ]; then
                 docker stop server_0_moo
             fi
-            if [ $SERVER_0_SERVICES -ne "none" ]; then
+            if [ $SERVER_0_SERVICES != "none" ]; then
                 docker stop server_0_services
             fi
             docker stop server_0_db
@@ -74,24 +75,25 @@ function stop {
             docker stop server_${2}_ircd
         fi
         echo "All containers of server $2 stopped."
-    elif [ $1 -eq "all" ]; then
+    elif [ $1 = "all" ]; then
         for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
-            delete("server", $i)
+            stop server $i
         done
         echo "All servers stopped."
     else
-        echo "Error: container \'$name\' does not exist."
+        echo "Error: container '$name' does not exist."
     fi
 }
 
 
-# Example: delete("ircd", 0)
+# Example: delete ircd 0
 function delete {
-	name = "$server_$2_$1"
-	if [ echo "ircd services acid moo users" | grep -q "\b$1\b" ]; then
+	name="server_$2_$1"
+	echo "ircd services acid moo users" | grep -q "\b$1\b"
+	if [ $? -eq 0 ]; then
 		docker rm -f $name
-		echo "Container \'$name\' deleted."
-	elif [ $1 -eq "server" ]; then
+		echo "Container '$name' deleted."
+	elif [ $1 = "server" ]; then
 		if [ $2 -gt 0 ]; then
 			if [ $SERVER_0_USERS -gt 0 ]; then
 				docker rm -f server_0_users
@@ -102,7 +104,7 @@ function delete {
             if [ $SERVER_0_MOO -eq 1 ]; then
                 docker rm -f server_0_moo
             fi
-            if [ $SERVER_0_SERVICES -ne "none" ]; then
+            if [ $SERVER_0_SERVICES != "none" ]; then
                 docker rm -f server_0_services
             fi
 			docker rm -f server_0_db
@@ -115,13 +117,13 @@ function delete {
 			docker rm -f server_${2}_ircd
 		fi
 		echo "All containers of server $2 deleted."
-	elif [ $1 -eq "all" ]; then
+	elif [ $1 = "all" ]; then
 		for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
-			delete("server", $i)
+			delete server $i
 		done
 		echo "All servers deleted."
 	else
-		echo "Error: container \'$name\' does not exist."
+		echo "Error: container '$name' does not exist."
 	fi
 }
 
@@ -145,19 +147,23 @@ function delete_all {
 
 source config.sh
 
-if [ $# -eq 1 ]; then
-	if [ $1 = "start" ]; then
-		start_all
-	elif [ $1 = "stop" ]; then
-		stop_all
-	elif [ $1 = "build" ]; then
-		build_all
-	elif [ $1 = "delete" ]; then
-		delete_all
-	fi
-else
+case "$1" in
+start)
+	start $2 $3 $4
+	;;
+stop)
+	stop $2 $3
+	;;
+build)
+	build $2 $3
+	;;
+delete)
+	delete $2 $3
+	;;
+*)
 	echo "Error: No args provided."
 	exit 65
-fi
+	;;
+esac
 
 exit 0
