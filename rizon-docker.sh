@@ -26,6 +26,48 @@ function build {
 			echo "Error: container '$2' does not exist."
 		fi
 		;;
+	services)
+		if [ $2 = "anope1" -o $2 = "anope2" ]; then
+			cp config.sh "${2}/"
+			docker build -t $2 "./$2"
+			rm "{$2}/config.sh"
+			echo "Container '$2' is built."
+		else
+			echo "Error: container '$2' does not exist."
+		fi
+		;;
+	db)
+		if [ $2 = "mysqld" ]; then
+			docker build -t db "./$2"
+			echo "Container '$2' is built."
+		else
+			echo "Error: container '$2' does not exist."
+		fi
+		;;
+	acid)
+		if [ $2 = "1" -o $2 = "2" ]; then
+			build db mysqld
+			cp config.sh acid/
+			docker build -t "acid_anope$2" acid/
+			rm acid/config.sh
+			echo "Container '$2' is built."
+		else
+			echo "Error: acid container cannot be built against anope version '$2'."
+		fi
+		;;
+	moo)
+		build db mysqld
+		cp config.sh moo/
+		docker build -t moo moo/
+		rm moo/config.sh
+		echo "Container 'moo' is built."
+		;;
+	users)
+		cp config.sh users/
+		docker build -t users users/
+		rm users/config.sh
+		echo "Container 'users' is built."
+		;;
 	esac
 }
 
