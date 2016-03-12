@@ -6,6 +6,7 @@ export OWNER_PASSWORD=ChangeMe123
 # only servers with index less than this variable will be deployed
 # server indexes must be consecutive positive integers with no gaps
 # servers with indexes greater or equal to this variable will be ignored
+# possible values: any integer between 1 and 10 inclusive
 export NUMBER_OF_SERVERS=1
 
 # Main IRCD server, always with index 0
