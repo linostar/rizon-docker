@@ -135,9 +135,9 @@ function start {
 			if [ $SERVER_0_ACID -eq 1 -a $SERVER_0_SERVICES != "none" ]; then
 				start acid 0
 			fi
-#			if [ $SERVER_0_MOO -eq 1 ]; then
-#				start moo 0
-#			fi
+			if [ $SERVER_0_MOO -eq 1 ]; then
+				start moo 0
+			fi
 			if [ $SERVER_0_USERS -gt 0 ]; then
 				start users 0
 			fi
@@ -244,6 +244,20 @@ function delete {
 }
 
 
+# Example: list server 0
+function list {
+	if [ $# -eq 0 ]; then
+		docker ps -a | grep -e "\bserver_[0-9]_\(ircd\|services\|acid\|moo\|db\|users\)\b"
+	elif [ $1 = "server" ]; then
+		if [ $2 -ge 0 ]; then
+			docker ps -a | grep -e "\bserver_$2_\(ircd\|services\|acid\|moo\|db\|users\)\b"
+		fi
+	else
+		echo "Error: incorrect command syntax."
+	fi
+}
+
+
 source config.sh
 
 case "$1" in
@@ -258,6 +272,9 @@ build)
 	;;
 delete)
 	delete $2 $3
+	;;
+list)
+	list $2 $3
 	;;
 *)
 	echo "Error: Bad argument(s)."
