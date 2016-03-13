@@ -79,7 +79,7 @@ function start {
 		declare ircdtype="SERVER_${2}_IRCD"
 		if [ ${!ircdtype} = "plexus3" -o ${!ircdtype} = "plexus4" ]; then
 			name="server_${2}_ircd"
-			docker run -dit -p "666${2}:666${2}" --name $name ${!ircdtype}
+			docker run -dit -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name ${!ircdtype}
 			echo "Container '$name' started."
 		else
 			echo "Error: '${!ircdtype}' is not a supported ircd type."
