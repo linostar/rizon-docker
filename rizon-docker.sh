@@ -40,7 +40,7 @@ function build {
 			cp config.sh acid/
 			docker build -t "acid_anope$2" acid/
 			rm acid/config.sh
-			echo "Container '$2' is built."
+			echo "Container 'acid_anope$2' is built."
 		else
 			echo "Error: acid container cannot be built against anope version '$2'."
 		fi

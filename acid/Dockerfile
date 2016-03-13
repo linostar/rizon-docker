@@ -20,5 +20,5 @@ RUN mvn install
 RUN ln -s pyva/libpyva/pyva-native/libpyva.so libpyva.so
 COPY start_acid.sh /usr/bin
 COPY acidictive.yml pyva.yml pypsd.yml config.sh ./
-RUN . /var/ircd/acid/config.sh; sed -i "s/___anope_version___/${SERVER_0_SERVICES:5:1}/g" pypsd.yml
+RUN source /var/ircd/acid/config.sh; sed -i "s/___anope_version___/${SERVER_0_SERVICES:5:1}/g" pypsd.yml
 ENTRYPOINT /bin/bash /usr/bin/start_acid.sh
