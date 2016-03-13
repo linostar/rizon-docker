@@ -26,7 +26,9 @@ function build {
 		;;
 	db)
 		if [ $2 = "mysqld" ]; then
+			cp config.sh mysqld/
 			docker build -t db "./$2"
+			rm mysqld/config.sh
 			echo "Container '$2' is built."
 		else
 			echo "Error: container '$2' does not exist."
@@ -70,24 +72,26 @@ function build {
 }
 
 
-# Example: start ircd 0 plexus4
+# Example: start ircd 0
 function start {
 	case "$1" in
 	ircd)
-		if [ $3 = "plexus3" -o $3 = "plexus4" ]; then
+		declare ircdtype="SERVER_${2}_IRCD"
+		if [ ${!ircdtype} = "plexus3" -o ${!ircdtype} = "plexus4" ]; then
 			name="server_${2}_ircd"
-			docker run -dit -p "666${2}:666${2}" --name $name $3
+			docker run -dit -p "666${2}:666${2}" --name $name ${!ircdtype}
 			echo "Container '$name' started."
 		else
-			echo "Error: '$3' is not a supported ircd type."
+			echo "Error: '${!ircdtype}' is not a supported ircd type."
 		fi
 		;;
 	services)
-		if [ $3 = "anope1" -o $3 = "anope2" ]; then
+		declare servicestype="SERVER_${2}_SERVICES"
+		if [ ${!servicestype} = "anope1" -o ${!servicestype} = "anope2" ]; then
 			name="server_${2}_services"
-			docker run -dit --net=container:server_${2}_ircd --name $name $3
+			docker run -dit --net=container:server_${2}_ircd --name $name ${!servicestype}
 			echo "Container '$name' started."
-		elif [ $3 != "none" ]; then
+		elif [ ${!servicestype} != "none" ]; then
 			echo "Error: '$3' is not a supported services type."
 		fi
 		;;
@@ -97,24 +101,25 @@ function start {
 		echo "Container '$name' started."
 		;;
 	acid)
-		if [ $3 = "1" -o $3 = "2" ]; then
-			name="server_${2}_acid"
+		declare servicestype="SERVER_${2}_SERVICES"
+		if [ ${!servicestype} = "anope1" -o ${!servicestype} = "anope2" ]; then
 			docker ps -a | grep server_${2}_db | grep -qv Exited
 			if [ $? -ne 0 ]; then
 				start db $2
 			fi
-			docker run -dit --net=container:server_${2}_ircd --name $name "acid_anope$3"
+			name="server_${2}_acid"
+			docker run -dit --net=container:server_${2}_ircd --name $name "acid_${!servicestype}"
 			echo "Container '$name' started."
 		else
 			echo "Error: There is no acid container built against anope version '$3'."
 		fi
 		;;
 	moo)
-		name="server_${2}_moo"
 		docker ps -a | grep server_${2}_db | grep -qv Exited
 		if [ $? -ne 0 ]; then
 			start db $2
 		fi
+		name="server_${2}_moo"
 		docker run -dit --net=container:server_${2}_ircd --name $name moo
 		echo "Container '$name' started."
 		;;
@@ -125,26 +130,25 @@ function start {
 		;;
 	server)
 		if [ $2 -eq 0 ]; then
-			start ircd 0 $SERVER_0_IRCD
-			start services 0 $SERVER_0_SERVICES
+			start ircd 0
+			start services 0
 			if [ $SERVER_0_ACID -eq 1 -a $SERVER_0_SERVICES != "none" ]; then
-				start acid 0 ${SERVER_0_SERVICES:5:1}
+				start acid 0
 			fi
-			if [ $SERVER_0_MOO -eq 1 ]; then
-				start moo
-			fi
+#			if [ $SERVER_0_MOO -eq 1 ]; then
+#				start moo 0
+#			fi
 			if [ $SERVER_0_USERS -gt 0 ]; then
 				start users 0
 			fi
 		elif [ $2 -gt 0 ]; then
-			declare ircdtype="SERVER_${2}_IRCD"
 			declare users="SERVER_${2}_USERS"
-			start ircd $2 ${!ircdtype}
+			start ircd $2
 			if [ ${!users} -gt 0 ]; then
 				start users $2
 			fi
 		fi
-		echo "All containers of server $2 started."
+		echo "All containers of 'server $2' started."
 		;;
 	all)
 		for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
@@ -186,7 +190,7 @@ function stop {
             fi
             docker stop server_${2}_ircd
         fi
-        echo "All containers of server $2 stopped."
+        echo "All containers of 'server $2' stopped."
     elif [ $1 = "all" ]; then
         for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
             stop server $i
@@ -228,7 +232,7 @@ function delete {
 			fi
 			docker rm -f server_${2}_ircd
 		fi
-		echo "All containers of server $2 deleted."
+		echo "All containers of 'server $2' deleted."
 	elif [ $1 = "all" ]; then
 		for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
 			delete server $i
@@ -244,7 +248,7 @@ source config.sh
 
 case "$1" in
 start)
-	start $2 $3 $4
+	start $2 $3
 	;;
 stop)
 	stop $2 $3
