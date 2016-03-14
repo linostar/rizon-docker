@@ -16,7 +16,7 @@ serverinfo:
 uplink:
   host: 127.0.0.1
   pass: password
-  port: 6633
+  port: 6630
   ssl: false
 
 clients:

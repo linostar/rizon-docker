@@ -72,15 +72,15 @@ function build {
 }
 
 
-# Example: start ircd 0
-function start {
+# Example: create ircd 0
+function create {
 	case "$1" in
 	ircd)
 		declare ircdtype="SERVER_${2}_IRCD"
 		if [ ${!ircdtype} = "plexus3" -o ${!ircdtype} = "plexus4" ]; then
 			name="server_${2}_ircd"
-			docker run -dit -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name ${!ircdtype}
-			echo "Container '$name' started."
+			docker create -it -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name ${!ircdtype}
+			echo "Container '$name' created."
 		else
 			echo "Error: '${!ircdtype}' is not a supported ircd type."
 		fi
@@ -89,74 +89,120 @@ function start {
 		declare servicestype="SERVER_${2}_SERVICES"
 		if [ ${!servicestype} = "anope1" -o ${!servicestype} = "anope2" ]; then
 			name="server_${2}_services"
-			docker run -dit --net=container:server_${2}_ircd --name $name ${!servicestype}
-			echo "Container '$name' started."
+			docker create -it --net=container:server_${2}_ircd --name $name ${!servicestype}
+			echo "Container '$name' created."
 		elif [ ${!servicestype} != "none" ]; then
 			echo "Error: '$3' is not a supported services type."
 		fi
 		;;
 	db)
 		name="server_${2}_db"
-		docker run -dit -e MYSQL_ALLOW_EMPTY_PASSWORD=yes --net=container:server_${2}_ircd --name $name db
-		echo "Container '$name' started."
+		docker create -it -e MYSQL_ALLOW_EMPTY_PASSWORD=yes --net=container:server_${2}_ircd --name $name db
+		echo "Container '$name' created."
 		;;
 	acid)
 		declare servicestype="SERVER_${2}_SERVICES"
 		if [ ${!servicestype} = "anope1" -o ${!servicestype} = "anope2" ]; then
-			docker ps -a | grep server_${2}_db | grep -qv Exited
+			docker ps -a | grep server_${2}_db
 			if [ $? -ne 0 ]; then
-				start db $2
+				create db $2
 			fi
 			name="server_${2}_acid"
-			docker run -dit --net=container:server_${2}_ircd --name $name "acid_${!servicestype}"
-			echo "Container '$name' started."
+			docker create -it --net=container:server_${2}_ircd --name $name "acid_${!servicestype}"
+			echo "Container '$name' created."
 		else
 			echo "Error: There is no acid container built against anope version '$3'."
 		fi
 		;;
 	moo)
-		docker ps -a | grep server_${2}_db | grep -qv Exited
+		docker ps -a | grep server_${2}_db
 		if [ $? -ne 0 ]; then
-			start db $2
+			create db $2
 		fi
 		name="server_${2}_moo"
-		docker run -dit --net=container:server_${2}_ircd --name $name moo
-		echo "Container '$name' started."
+		docker create -it --net=container:server_${2}_ircd --name $name moo
+		echo "Container '$name' created."
 		;;
 	users)
 		name="server_${2}_users"
-		docker run -dit --name $name users
-		echo "Container '$name' started."
+		docker create -it --name $name users
+		echo "Container '$name' created."
 		;;
 	server)
 		if [ $2 -eq 0 ]; then
-			start ircd 0
-			start services 0
+			create ircd 0
+			create services 0
 			if [ $SERVER_0_ACID -eq 1 -a $SERVER_0_SERVICES != "none" ]; then
-				start acid 0
+				create acid 0
 			fi
 			if [ $SERVER_0_MOO -eq 1 ]; then
-				start moo 0
+				create moo 0
 			fi
 			if [ $SERVER_0_USERS -gt 0 ]; then
-				start users 0
+				create users 0
 			fi
 		elif [ $2 -gt 0 ]; then
 			declare users="SERVER_${2}_USERS"
-			start ircd $2
+			create ircd $2
 			if [ ${!users} -gt 0 ]; then
-				start users $2
+				create users $2
 			fi
 		fi
-		echo "All containers of 'server $2' started."
+		echo "All containers of 'server $2' created."
 		;;
 	all)
 		for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
-			start server $i
+			create server $i
 		done
-		echo "All servers started."
+		echo "All servers created."
 		;;
 	esac
+}
+
+
+# Example: start ircd 0
+function start {
+    name="server_$2_$1"
+    echo "ircd services acid moo users" | grep -q "\b$1\b"
+    if [ $? -eq 0 ]; then
+        docker start $name
+        echo "Container '$name' started."
+    elif [ $1 = "server" ]; then
+        if [ $2 -eq 0 ]; then
+			docker start server_0_ircd
+            if [ $SERVER_0_SERVICES != "none" ]; then
+                docker start server_0_services
+            fi
+            if [ $SERVER_0_ACID -eq 1 ]; then
+				docker start server_0_db
+				SERVER_0_DB_STARTED=1
+                docker start server_0_acid
+            fi
+            if [ $SERVER_0_MOO -eq 1 ]; then
+				if [ $SERVER_0_DB_STARTED -ne 1 ]; then
+					docker start server_0_db
+				fi
+                docker start server_0_moo
+            fi
+            if [ $SERVER_0_USERS -gt 0 ]; then
+                docker start server_0_users
+            fi
+        elif [ $2 -gt 0 ]; then
+            declare users="SERVER_${2}_USERS"
+            docker start server_${2}_ircd
+            if [ ${!users} -gt 0 ]; then
+                docker start server_${2}_users
+            fi
+        fi
+        echo "All containers of 'server $2' started."
+    elif [ $1 = "all" ]; then
+        for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
+            start server $i
+        done
+        echo "All servers started."
+    else
+        echo "Error: container '$name' does not exist."
+    fi
 }
 
 
@@ -174,14 +220,18 @@ function stop {
             fi
             if [ $SERVER_0_ACID -eq 1 ]; then
                 docker stop server_0_acid
+				docker stop server_0_db
+				SERVER_0_DB_STOPPED=1
             fi
             if [ $SERVER_0_MOO -eq 1 ]; then
                 docker stop server_0_moo
+				if [ $SERVER_0_DB_STOPPED -ne 1 ]; then
+					docker stop server_0_db
+				fi
             fi
             if [ $SERVER_0_SERVICES != "none" ]; then
                 docker stop server_0_services
             fi
-            docker stop server_0_db
             docker stop server_0_ircd
         elif [ $2 -gt 0 ]; then
             declare users="SERVER_${2}_USERS"
@@ -199,6 +249,13 @@ function stop {
     else
         echo "Error: container '$name' does not exist."
     fi
+}
+
+
+# Example: restart ircd 0
+function restart {
+	stop $1 $2
+	start $1 $2
 }
 
 
@@ -267,8 +324,14 @@ start)
 stop)
 	stop $2 $3
 	;;
+restart)
+	restart $2 $3
+	;;
 build)
 	build $2 $3
+	;;
+create)
+	create $2 $3
 	;;
 delete)
 	delete $2 $3
