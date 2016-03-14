@@ -74,12 +74,17 @@ function build {
 
 # Example: create ircd 0
 function create {
+	if [ ! -f data/volume_created ]; then
+		docker create -v ${PWD}/data:/data --name rizon_data centos:7 /bin/true
+		touch data/volume_created
+		echo "Data volume container 'rizon_data' created."
+	fi
 	case "$1" in
 	ircd)
 		declare ircdtype="SERVER_${2}_IRCD"
 		if [ ${!ircdtype} = "plexus3" -o ${!ircdtype} = "plexus4" ]; then
 			name="server_${2}_ircd"
-			docker create -it -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name ${!ircdtype}
+			docker create -it --volumes-from rizon_data -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name ${!ircdtype}
 			echo "Container '$name' created."
 		else
 			echo "Error: '${!ircdtype}' is not a supported ircd type."
@@ -294,6 +299,8 @@ function delete {
 		for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
 			delete server $i
 		done
+		docker rm -v rizon_data
+		rm -f data/volume_created
 		echo "All servers deleted."
 	else
 		echo "Error: container '$name' does not exist."
