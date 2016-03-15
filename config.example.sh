@@ -23,10 +23,11 @@ export SERVER_0_MOO=0
 export SERVER_0_USERS=0
 # comma-separated list of channels that the fake users, if any, will join
 export SERVER_0_USER_CHANNELS='#chat'
+# comma-separated list of indexes of servers to connect to
+export SERVER_0_LINK=''
 
 # Other IRCD servers (should reflect the value of $NUMBER_OF_SERVERS)
 export SERVER_1_IRCD=plexus3
 export SERVER_1_USERS=0
 export SERVER_1_CHANNELS=''
-# the index of the server to which this server will be directly connected
-export SERVER_1_LINK=0
+export SERVER_1_LINK='0'

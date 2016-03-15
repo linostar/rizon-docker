@@ -1,72 +1,89 @@
 #!/bin/bash
 
 
-# Example: build ircd plexus4
+# Example: build ircd 0
 function build {
 	case "$1" in
 	ircd)
-		if [ $2 = "plexus3" -o $2 = "plexus4" ]; then
-			cp config.sh "${2}/"
-			docker build -t $2 "./$2"
-			rm "${2}/config.sh"
-			echo "Container '$2' is built."
+		declare ircdtype="SERVER_$2_IRCD"
+		if [ ${!ircdtype} = "plexus3" -o ${!ircdtype} = "plexus4" ]; then
+			cp config.sh "${!ircdtype}/"
+			docker build -t "server_${2}_ircd" "./${!ircdtype}"
+			rm "${!ircdtype}/config.sh"
+			echo "Container 'server_${2}_ircd' is built."
 		else
-			echo "Error: container '$2' does not exist."
+			echo "Error: container type '${!ircdtype}' does not exist."
 		fi
 		;;
 	services)
-		if [ $2 = "anope1" -o $2 = "anope2" ]; then
-			cp config.sh "${2}/"
-			docker build -t $2 "./$2"
-			rm "{$2}/config.sh"
-			echo "Container '$2' is built."
+		declare servicestype="SERVER_$2_SERVICES"
+		if [ ${!servicestype} = "anope1" -o ${!servicestype} = "anope2" ]; then
+			cp config.sh "${!servicestype}/"
+			docker build -t "server_${2}_services" "./${!servicestype}"
+			rm "{$!servicestype}/config.sh"
+			echo "Container 'server_${2}_services' is built."
 		else
-			echo "Error: container '$2' does not exist."
+			echo "Error: container type '${!servicestype}' does not exist."
 		fi
 		;;
 	db)
-		if [ $2 = "mysqld" ]; then
+		if [ $2 -eq 0 ]; then
 			cp config.sh mysqld/
-			docker build -t db "./$2"
+			docker build -t server_0_db "./mysqld"
 			rm mysqld/config.sh
-			echo "Container '$2' is built."
+			echo "Container 'server_0_db' is built."
 		else
-			echo "Error: container '$2' does not exist."
+			echo "Error: container type 'db' can be built only for 'server 0'."
 		fi
 		;;
 	acid)
-		if [ $2 = "1" -o $2 = "2" ]; then
-			build db mysqld
-			cp config.sh acid/
-			docker build -t "acid_anope$2" acid/
-			rm acid/config.sh
-			echo "Container 'acid_anope$2' is built."
+		if [ $2 -eq 0 ]; then
+			if [ $SERVER_0_ACID -eq 1 ]; then
+				build db 0
+				cp config.sh acid/
+				docker build -t "server_0_acid" acid/
+				rm acid/config.sh
+				echo "Container 'server_0_acid' is built."
+			fi
 		else
-			echo "Error: acid container cannot be built against anope version '$2'."
+			echo "Error: container type 'acid' can be built only for 'server 0'."
 		fi
 		;;
 	moo)
-		build db mysqld
-		cp config.sh moo/
-		docker build -t moo moo/
-		rm moo/config.sh
-		echo "Container 'moo' is built."
+		if [ $2 -eq 0 ]; then
+			if [ $SERVER_0_MOO -eq 1 ]; then
+				build db 0
+				cp config.sh moo/
+				docker build -t server_0_moo moo/
+				rm moo/config.sh
+				echo "Container 'server_0_moo' is built."
+			fi
+		else
+			echo "Error: container type 'moo' can be built only for 'server 0'."
+		fi
 		;;
 	users)
-		cp config.sh users/
-		docker build -t users users/
-		rm users/config.sh
-		echo "Container 'users' is built."
+		declare users="SERVER_$2_USERS"
+		if [ ${!users} -gt 0 ]; then
+			cp config.sh users/
+			docker build -t "server_${2}_users" users/
+			rm users/config.sh
+			echo "Container 'server_${2}_users' is built."
+		fi
+		;;
+	server)
+		build ircd $2
+		build services $2
+		build acid $2
+		build moo $2
+		build users $2
+		echo "All containers of 'server $2' are built."
 		;;
 	all)
-		build ircd plexus3
-		build ircd plexus4
-		build services anope1
-		build services anope2
-		build acid 1
-		build acid 2
-		build moo
-		build users
+		for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
+			build server $i
+		done
+		echo "All servers are built."
 		;;
 	esac
 }
@@ -84,7 +101,7 @@ function create {
 		declare ircdtype="SERVER_${2}_IRCD"
 		if [ ${!ircdtype} = "plexus3" -o ${!ircdtype} = "plexus4" ]; then
 			name="server_${2}_ircd"
-			docker create -it --volumes-from rizon_data -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name ${!ircdtype}
+			docker create -it --volumes-from rizon_data -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name $name
 			echo "Container '$name' created."
 		else
 			echo "Error: '${!ircdtype}' is not a supported ircd type."
@@ -94,7 +111,7 @@ function create {
 		declare servicestype="SERVER_${2}_SERVICES"
 		if [ ${!servicestype} = "anope1" -o ${!servicestype} = "anope2" ]; then
 			name="server_${2}_services"
-			docker create -it --net=container:server_${2}_ircd --name $name ${!servicestype}
+			docker create -it --net=container:server_${2}_ircd --name $name $name
 			echo "Container '$name' created."
 		elif [ ${!servicestype} != "none" ]; then
 			echo "Error: '$3' is not a supported services type."
@@ -102,7 +119,7 @@ function create {
 		;;
 	db)
 		name="server_${2}_db"
-		docker create -it -e MYSQL_ALLOW_EMPTY_PASSWORD=yes --net=container:server_${2}_ircd --name $name db
+		docker create -it -e MYSQL_ALLOW_EMPTY_PASSWORD=yes --net=container:server_${2}_ircd --name $name $name
 		echo "Container '$name' created."
 		;;
 	acid)
@@ -113,7 +130,7 @@ function create {
 				create db $2
 			fi
 			name="server_${2}_acid"
-			docker create -it --net=container:server_${2}_ircd --name $name "acid_${!servicestype}"
+			docker create -it --net=container:server_${2}_ircd --name $name $name
 			echo "Container '$name' created."
 		else
 			echo "Error: There is no acid container built against anope version '$3'."
@@ -125,12 +142,12 @@ function create {
 			create db $2
 		fi
 		name="server_${2}_moo"
-		docker create -it --net=container:server_${2}_ircd --name $name moo
+		docker create -it --net=container:server_${2}_ircd --name $name $name
 		echo "Container '$name' created."
 		;;
 	users)
 		name="server_${2}_users"
-		docker create -it --name $name users
+		docker create -it --name $name $name
 		echo "Container '$name' created."
 		;;
 	server)
