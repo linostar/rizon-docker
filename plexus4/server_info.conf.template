@@ -1,0 +1,22 @@
+serverinfo {
+	name = "ircd___server_index___.rizon.net";
+	sid = "7Q___server_index___";
+	description = "Rizon Client Server";
+	network_name = "Rizon";
+	network_desc = "Where are you?";
+	hub = ___is_hub___;
+	max_clients = 512;
+	max_nick_length = 30;
+	max_topic_length = 390;
+};
+
+listen {
+	port = 666___server_index___;
+
+	flags = server;
+	port = 663___server_index___;
+
+#	flags = ssl;
+#	ssl_profile = "default";
+#	port = 6697, 9999;
+};

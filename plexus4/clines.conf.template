@@ -1,0 +1,12 @@
+connect {
+	name = "ircd___server_index___.rizon.net";
+	host = "127.0.0.1";
+	vhost = "127.0.0.1";
+	send_password = "password";
+	accept_password = "password";
+	encrypted = no;
+	port = 663___server_index___;
+	class = "server";
+#	hub_mask = "*";
+	flags = autoconn;
+};
