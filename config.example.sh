@@ -25,9 +25,12 @@ export SERVER_0_USERS=0
 export SERVER_0_USER_CHANNELS='#chat'
 # comma-separated list of indexes of servers to connect to
 export SERVER_0_LINK=''
+# whether the ircd of this server is hub or leaf
+export SERVER_0_HUB=1
 
-# Other IRCD servers (should reflect the value of $NUMBER_OF_SERVERS)
+# Other IRCD servers (you need to change the value of $NUMBER_OF_SERVERS accordingly)
 export SERVER_1_IRCD=plexus3
 export SERVER_1_USERS=0
 export SERVER_1_CHANNELS=''
 export SERVER_1_LINK='0'
+export SERVER_1_HUB=0
