@@ -24,7 +24,7 @@ export SERVER_0_USERS=0
 # comma-separated list of channels that the fake users, if any, will join
 export SERVER_0_USER_CHANNELS='#chat'
 # comma-separated list of indexes of servers to connect to
-export SERVER_0_LINK=''
+export SERVER_0_LINKS=''
 # whether the ircd of this server is hub or leaf
 export SERVER_0_HUB=1
 
@@ -32,5 +32,5 @@ export SERVER_0_HUB=1
 export SERVER_1_IRCD=plexus3
 export SERVER_1_USERS=0
 export SERVER_1_CHANNELS=''
-export SERVER_1_LINK='0'
+export SERVER_1_LINKS='0'
 export SERVER_1_HUB=0

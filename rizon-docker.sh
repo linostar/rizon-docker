@@ -1,6 +1,28 @@
 #!/bin/bash
 
 
+# Internal function for building ircd config from templates. Example: templater 0 plexus4
+function templater {
+	declare serverlinks="SERVER_${1}_LINKS"
+	declare ishub="SERVER_${1}_HUB"
+	mkdir -p tmp
+	rm -f tmp/ircd${1}_clines.conf tmp/ircd${1}_info.conf
+	if [ ${!ishub} -eq 1 ]; then
+		sed 's/^#//g' "${2}/clines.conf.template" > tmp/clines.conf.template
+		sed "s/___is_hub___/yes/" "${2}/server_info.conf.template" > tmp/ircd${1}_info.conf
+	else
+		cp "${2}/clines.conf.template" tmp/clines.conf.tempate
+		sed "s/___is_hub___/no/" "${2}/server_info.conf.template" > tmp/ircd${1}_info.conf
+	fi
+	sed -i "s/___server_index___/${1}/g" tmp/ircd${1}_info.conf
+	for i in `echo ${!serverlinks} | sed "s/,/ /g""`; do
+		sed "s/___server_index___/${1}/g" tmp/clines.conf.template >> tmp/ircd${1}_clines.conf
+	done
+	cp tmp/ircd${1}_info.conf ${2}/
+	cp tmp/ircd${1}_clines.conf ${2}/
+}
+
+
 # Example: build ircd 0
 function build {
 	case "$1" in
@@ -8,6 +30,7 @@ function build {
 		declare ircdtype="SERVER_$2_IRCD"
 		if [ ${!ircdtype} = "plexus3" -o ${!ircdtype} = "plexus4" ]; then
 			cp config.sh "${!ircdtype}/"
+			templater $2 ${!ircdtype}
 			docker build -t "server_${2}_ircd" "./${!ircdtype}"
 			rm "${!ircdtype}/config.sh"
 			echo "Container 'server_${2}_ircd' is built."
