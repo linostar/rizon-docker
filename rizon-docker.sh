@@ -6,7 +6,7 @@ function templater {
 	declare serverlinks="SERVER_${1}_LINKS"
 	declare ishub="SERVER_${1}_HUB"
 	mkdir -p tmp
-	rm -f tmp/ircd${1}_clines.conf tmp/ircd${1}_info.conf
+	rm -f tmp/ircd${1}_clines.conf tmp/ircd${1}_info.conf ${2}/Dockerfile
 	if [ ${!ishub} -eq 1 ]; then
 		sed 's/^#//g' "${2}/clines.conf.template" > tmp/clines.conf.template
 		sed "s/___is_hub___/yes/" "${2}/server_info.conf.template" > tmp/ircd${1}_info.conf
@@ -18,6 +18,7 @@ function templater {
 	for i in `echo ${!serverlinks} | sed "s/,/ /g""`; do
 		sed "s/___server_index___/${1}/g" tmp/clines.conf.template >> tmp/ircd${1}_clines.conf
 	done
+	sed "s/___server_index___/${1}/g" ${2}/Dockerfile.template > ${2}/Dockerfile
 	cp tmp/ircd${1}_info.conf ${2}/
 	cp tmp/ircd${1}_clines.conf ${2}/
 }
@@ -114,17 +115,12 @@ function build {
 
 # Example: create ircd 0
 function create {
-	if [ ! -f data/volume_created ]; then
-		docker create -v ${PWD}/data:/data --name rizon_data centos:7 /bin/true
-		touch data/volume_created
-		echo "Data volume container 'rizon_data' created."
-	fi
 	case "$1" in
 	ircd)
 		declare ircdtype="SERVER_${2}_IRCD"
 		if [ ${!ircdtype} = "plexus3" -o ${!ircdtype} = "plexus4" ]; then
 			name="server_${2}_ircd"
-			docker create -it --volumes-from rizon_data -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name $name
+			docker create -it -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name $name
 			echo "Container '$name' created."
 		else
 			echo "Error: '${!ircdtype}' is not a supported ircd type."
@@ -339,8 +335,6 @@ function delete {
 		for i in `seq 0 $[${NUMBER_OF_SERVERS}-1]`; do
 			delete server $i
 		done
-		docker rm -v rizon_data
-		rm -f data/volume_created
 		echo "All servers deleted."
 	else
 		echo "Error: container '$name' does not exist."
