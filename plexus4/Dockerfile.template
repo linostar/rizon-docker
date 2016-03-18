@@ -15,5 +15,5 @@ COPY ircd.conf owner.conf services_cline.conf acid_cline.conf ircd___server_inde
 RUN source /var/ircd/etc/config.sh; sed -i "s/___owner_name___/$OWNER_NAME/g;s/___owner_password___/$OWNER_PASSWORD/g" owner.conf
 RUN cat ircd___server_index____info.conf ircd___server_index____clines.conf owner.conf services_cline.conf acid_cline.conf >> ircd.conf; rm config.sh; chown -R ircd /var/ircd
 COPY start_ircd.sh /usr/bin/
-EXPOSE 663__server_index___ 666___server_index___
+EXPOSE 663___server_index___ 666___server_index___
 ENTRYPOINT /bin/bash /usr/bin/start_ircd.sh
