@@ -16,6 +16,10 @@ function templater {
 		sed "s/___is_hub___/no/" "${2}/server_info.conf.template" > tmp/ircd${1}_info.conf
 	fi
 	sed -i "s/___server_index___/${1}/g" tmp/ircd${1}_info.conf
+	if [ $1 -eq 0 ]; then
+		# Allow SSL ports in server_0_ircd
+		sed -i 's/^#___ssl___//g' tmp/ircd${1}_info.conf
+	fi
 	for i in `echo ${!serverlinks} | sed 's/,/ /g'`; do
 		sed "s/___server_index___/${i}/g" tmp/clines.conf.template >> tmp/ircd${1}_clines.conf
 	done
@@ -137,7 +141,7 @@ function create {
 		if [ "${!ircdtype}" = "plexus3" -o "${!ircdtype}" = "plexus4" ]; then
 			name="server_${2}_ircd"
 			if [ $2 -eq 0 ]; then
-				docker create -it -p 6630-6639:6630-6639 -p 6660-6669:6660-6669 --name $name $name
+				docker create -it -p 6630-6639:6630-6639 -p 6660-6669:6660-6669 -p 6697:6697 -p 9999:9999 --name $name $name
 			else
 				docker create -it --net=container:server_0_ircd --name $name $name
 			fi

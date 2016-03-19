@@ -17,7 +17,6 @@ listen {
 
 	port = 663___server_index___;
 
-#	flags = ssl;
-#	ssl_profile = "default";
-#	port = 6697, 9999;
+#___ssl___	flags = ssl;
+#___ssl___	port = 6697, 9999;
 };
