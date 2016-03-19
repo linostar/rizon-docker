@@ -20,6 +20,16 @@ function templater {
 		sed "s/___server_index___/${i}/g" tmp/clines.conf.template >> tmp/ircd${1}_clines.conf
 	done
 	sed "s/___server_index___/${1}/g" ${2}/Dockerfile.template > ${2}/Dockerfile
+	if [ $1 -eq 0 -a $SERVER_0_SERVICES != "none" ]; then
+		sed -i "s/___services_included___/services_cline.conf/g" ${2}/Dockerfile
+	else
+		sed -i "s/___services_included___//g" ${2}/Dockerfile
+	fi
+	if [ $1 -eq 0 -a $SERVER_0_ACID -eq 1 ]; then
+		sed -i "s/___acid_included___/acid_cline.conf/g" ${2}/Dockerfile
+	else
+		sed -i "s/___acid_included___//g" ${2}/Dockerfile
+	fi
 	cp tmp/ircd${1}_info.conf ${2}/
 	cp tmp/ircd${1}_clines.conf ${2}/
 }
@@ -126,7 +136,8 @@ function create {
 			if [ $2 -eq 0 ]; then
 				docker create -it -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name $name
 			else
-				docker create -it -p "663${2}:663${2}" -p "666${2}:666${2}" --net=container:server_0_ircd --name $name $name
+#				docker create -it -p "663${2}:663${2}" -p "666${2}:666${2}" --net=container:server_0_ircd --name $name $name
+				docker create -it --net=container:server_0_ircd --name $name $name
 			fi
 			echo "Container '$name' created."
 		else
