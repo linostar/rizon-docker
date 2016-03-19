@@ -30,6 +30,9 @@ function templater {
 	else
 		sed -i "s/___acid_included___//g" ${2}/Dockerfile
 	fi
+	if [ $1 -eq 0 ]; then
+		sed -i 's/^#EXPOSE/EXPOSE/' ${2}/Dockerfile
+	fi
 	cp tmp/ircd${1}_info.conf ${2}/
 	cp tmp/ircd${1}_clines.conf ${2}/
 }
@@ -134,9 +137,8 @@ function create {
 		if [ "${!ircdtype}" = "plexus3" -o "${!ircdtype}" = "plexus4" ]; then
 			name="server_${2}_ircd"
 			if [ $2 -eq 0 ]; then
-				docker create -it -p "663${2}:663${2}" -p "666${2}:666${2}" --name $name $name
+				docker create -it -p 6630-6639:6630-6639 -p 6660-6669:6660-6669 --name $name $name
 			else
-#				docker create -it -p "663${2}:663${2}" -p "666${2}:666${2}" --net=container:server_0_ircd --name $name $name
 				docker create -it --net=container:server_0_ircd --name $name $name
 			fi
 			echo "Container '$name' created."
