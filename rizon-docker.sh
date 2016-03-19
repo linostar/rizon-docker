@@ -102,7 +102,7 @@ function build {
 		;;
 	users)
 		declare users="SERVER_$2_USERS"
-		if [ ${!users} -gt 0 ]; then
+		if [ ${!users:-0} -gt 0 ]; then
 			cp config.sh users/
 			docker build -t "server_${2}_users" users/
 			rm users/config.sh
@@ -205,7 +205,7 @@ function create {
 		elif [ $2 -gt 0 ]; then
 			declare users="SERVER_${2}_USERS"
 			create ircd $2
-			if [ ${!users} -gt 0 ]; then
+			if [ ${!users:-0} -gt 0 ]; then
 				create users $2
 			fi
 		fi
@@ -251,7 +251,7 @@ function start {
         elif [ $2 -gt 0 ]; then
             declare users="SERVER_${2}_USERS"
             docker start server_${2}_ircd
-            if [ ${!users} -gt 0 ]; then
+            if [ ${!users:-0} -gt 0 ]; then
                 docker start server_${2}_users
             fi
         fi
@@ -296,7 +296,7 @@ function stop {
             docker stop server_0_ircd
         elif [ $2 -gt 0 ]; then
             declare users="SERVER_${2}_USERS"
-            if [ ${!users} -gt 0 ]; then
+            if [ ${!users:-0} -gt 0 ]; then
                 docker stop server_${2}_users
             fi
             docker stop server_${2}_ircd
@@ -345,7 +345,7 @@ function delete {
 			docker rm -f server_0_ircd
 		elif [ $2 -gt 0 ]; then
 			declare users="SERVER_${2}_USERS"
-			if [ ${!users} -gt 0 ]; then
+			if [ ${!users:-0} -gt 0 ]; then
 				docker rm -f server_${2}_users
 			fi
 			docker rm -f server_${2}_ircd
