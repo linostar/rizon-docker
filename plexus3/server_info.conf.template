@@ -6,8 +6,6 @@ serverinfo {
 	network_desc = "Where are you?";
 	hub = ___is_hub___;
 	max_clients = 512;
-	max_nick_length = 30;
-	max_topic_length = 390;
 	rsa_private_key_file = "/var/ircd/etc/rsa.key";
 	ssl_certificate_file = "/var/ircd/etc/cert.pem";
 };

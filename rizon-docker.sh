@@ -105,11 +105,13 @@ function build {
 		fi
 		;;
 	users)
-		declare users="SERVER_$2_USERS"
+		declare users="SERVER_${2}_USERS"
+		declare channels="SERVER_${2}_USER_CHANNELS"
 		if [ ${!users:-0} -gt 0 ]; then
-			cp config.sh users/
+			echo $2 > users/BOT_IRCD
+			echo "${!channels}" > users/BOT_CHANNELS
+			echo ${!users} > users/BOT_NB
 			docker build -t "server_${2}_users" users/
-			rm users/config.sh
 			echo "Container 'server_${2}_users' is built."
 		fi
 		;;
