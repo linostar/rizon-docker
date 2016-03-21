@@ -382,6 +382,15 @@ function list {
 }
 
 
+# Example: shell ircd 0
+function _shell {
+	name="server_${2}_${1}"
+	echo "Attaching to shell of '$name'. Press RETURN to start the shell."
+	echo "When you finish, press Ctrl-P Ctrl-Q to detach without stopping the container."
+	docker attach $name
+}
+
+
 source config.sh
 
 case "$1" in
@@ -405,6 +414,9 @@ delete)
 	;;
 list)
 	list $2 $3
+	;;
+shell)
+	_shell $2 $3
 	;;
 *)
 	echo "Error: Bad argument(s)."
