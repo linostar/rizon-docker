@@ -1,5 +1,5 @@
 # rizon-docker
-This is a automation script that can deploy one or multiple (up to 10) ircd servers, with service and network bots, among other things, on one Linux box. Docker containers are used for this purpose. The object is to provide an easy, simple and fast method to deploy multiple linked servers for testing and development purposes.
+rizon-docker is an automation script that can deploy one or multiple (up to 10) ircd servers, with service and network bots, among other things, on one Linux box. Docker containers are used for this purpose. The object is to provide an easy, simple and fast method to deploy multiple linked servers for testing and development purposes.
 
 ## Requirements
 * Linux
@@ -53,11 +53,11 @@ The syntax of the script is:
 
 ### Arguments:
 * **all:** everything in `config.sh`, with exception of servers that have index values equal or greater than `$NUMBER_OF_SERVERS`. 
-* **server <x>:** where *x* is the server index number in `config.sh`.
-* **<servicetype> <x>:** only the *servicetype* belonging to server *x*. *servicetype* can be: ***ircd***, ***services***, ***acid***, ***moo*** and ***users***.
+* **server _x_:** where *x* is the server index number in `config.sh`.
+* **_servicetype_ _x_:** only the *servicetype* belonging to server *x*. *servicetype* can be: ***ircd***, ***services***, ***acid***, ***moo*** and ***users***.
 
 ### Config file
-Explained by the comments within.
+Explained by the comments within `config.example.sh`.
 
 ### Examples
 * `./rizon-docker.sh build all`
