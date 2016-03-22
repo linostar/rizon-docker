@@ -7,7 +7,10 @@ RUN yum install -y sudo gcc gcc-c++ make which git cmake sendmail sendmail-cf m4
 RUN adduser --system --home /var/ircd --shell /bin/bash ircd
 RUN mkdir /var/ircd; git clone http://github.com/anope/anope.git
 WORKDIR anope
+RUN git fetch --tags
 RUN git checkout 1.8
+#___gitbranch___RUN git checkout ___branch___
+#___gitcommit___RUN git checkout ___commit___
 COPY config.cache ./
 RUN ./Config -nointro -quick
 RUN make && make install

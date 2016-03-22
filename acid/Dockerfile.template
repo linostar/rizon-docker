@@ -12,6 +12,9 @@ RUN adduser --system --home /var/ircd --shell /bin/bash ircd
 RUN rm /bin/sh; ln -s /bin/bash /bin/sh
 RUN mkdir -p /var/ircd; git clone http://gitlab.com/rizon/acid.git /var/ircd/acid
 WORKDIR /var/ircd/acid
+RUN git fetch --tags
+#___gitbranch___RUN git checkout ___branch___
+#___gitcommit___RUN git checkout ___commit___
 RUN git clone http://gitlab.com/rizon/pyva.git pyva/libpyva
 RUN sed -i 's/^py-dom-xpath.*//' pyva/requirements.txt; pip install -U pip; pip install -r pyva/requirements.txt
 RUN wget 'http://py-dom-xpath.googlecode.com/files/py-dom-xpath-0.1.tar.gz'; tar zxf py-dom-xpath-0.1.tar.gz; cd py-dom-xpath-0.1; python setup.py install; cp -rv build/lib.linux-x86_64-2.7/xpath/ /usr/local/lib/python2.7/dist-packages/; cd ..; rm -rf py-dom-xpath*

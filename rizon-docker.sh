@@ -1,8 +1,8 @@
 #!/bin/bash
 
 
-# Internal function for building ircd config from templates. Example: templater 0 plexus4
-function templater {
+# Internal function for building ircd config from templates. Example: ircd_templater 0 plexus4
+function ircd_templater {
 	declare serverlinks="SERVER_${1}_LINKS"
 	declare ishub="SERVER_${1}_HUB"
 	declare gitbranch="SERVER_${1}_IRCD_BRANCHCOMMIT"
@@ -51,6 +51,36 @@ function templater {
 }
 
 
+# Internal function for building services config from templates. Example: services_templater 0 anope2
+function services_templater {
+	declare gitbranch="SERVER_${1}_SERVICES_BRANCHCOMMIT"
+	cp -f ${2}/Dockerfile.template ${2}/Dockerfile
+    if [ -n "${!gitbranch}" ]; then
+        BRANCH="${!gitbranch%%:*}"
+        COMMIT="${!gitbranch##*:}"
+        sed -i "s|#___gitbranch___||;s|___branch___|${BRANCH}|" ${2}/Dockerfile
+        if [ -n "$COMMIT" ]; then
+            sed -i "s|#___gitcommit___||;s|___commit___|${COMMIT}|" ${2}/Dockerfile
+        fi
+    fi
+}
+
+
+# Internal function for building acid/moo config from templates. Example: servicebot_templater 0 acid
+function servicebot_templater {
+	declare gitbranch="SERVER_${1}_${2^^}_BRANCHCOMMIT"
+	cp -f ${2}/Dockerfile.template ${2}/Dockerfile
+    if [ -n "${!gitbranch}" ]; then
+        BRANCH="${!gitbranch%%:*}"
+        COMMIT="${!gitbranch##*:}"
+        sed -i "s|#___gitbranch___||;s|___branch___|${BRANCH}|" ${2}/Dockerfile
+        if [ -n "$COMMIT" ]; then
+            sed -i "s|#___gitcommit___||;s|___commit___|${COMMIT}|" ${2}/Dockerfile
+        fi
+    fi
+}
+
+
 # Example: build ircd 0
 function build {
 	case "$1" in
@@ -58,7 +88,7 @@ function build {
 		declare ircdtype="SERVER_$2_IRCD"
 		if [ "${!ircdtype}" = "plexus3" -o "${!ircdtype}" = "plexus4" ]; then
 			cp config.sh "${!ircdtype}/"
-			templater $2 ${!ircdtype}
+			ircd_templater $2 ${!ircdtype}
 			docker build -t "server_${2}_ircd" "./${!ircdtype}"
 			rm "${!ircdtype}/config.sh"
 			echo "Container 'server_${2}_ircd' is built."
@@ -70,6 +100,7 @@ function build {
 		declare servicestype="SERVER_$2_SERVICES"
 		if [ "${!servicestype}" = "anope1" -o "${!servicestype}" = "anope2" ]; then
 			cp config.sh "${!servicestype}/"
+			services_templater $2 ${!servicestype}
 			docker build -t "server_${2}_services" "./${!servicestype}"
 			rm "${!servicestype}/config.sh"
 			echo "Container 'server_${2}_services' is built."
@@ -92,6 +123,7 @@ function build {
 			if [ $SERVER_0_ACID -eq 1 ]; then
 				build db 0
 				cp config.sh acid/
+				servicebot_templater 0 acid
 				docker build -t "server_0_acid" acid/
 				rm acid/config.sh
 				echo "Container 'server_0_acid' is built."
@@ -105,6 +137,7 @@ function build {
 			if [ $SERVER_0_MOO -eq 1 ]; then
 				build db 0
 				cp config.sh moo/
+				servicebot_templater 0 moo
 				docker build -t server_0_moo moo/
 				rm moo/config.sh
 				echo "Container 'server_0_moo' is built."
