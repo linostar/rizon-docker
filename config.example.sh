@@ -12,7 +12,11 @@ export NUMBER_OF_SERVERS=1
 # Main IRCD server, always with index 0
 # possible values for SERVER_*_IRCD: plexus3, plexus4
 export SERVER_0_IRCD=plexus4
-# possible values for SERER_0_SERVICES: none, anope1, anope2
+# OPTIONAL: decides which branch/tag/commit to checkout
+# acceptable forms: '<branch>:<commit>', '<branch>:', 'tags/<tag>:<commit>', 'tags/<tag>:'
+# for example: 'master:34f56e2', 'master:', 'tags/2016_06:32ad43a', 'tags/2015_11:'
+export SERVER_0_IRCD_BRANCHCOMMIT=''
+# possible values for SERVER_0_SERVICES: none, anope1, anope2
 # note that the anope1 container is not full-featured yet, and therefore not recommended
 export SERVER_0_SERVICES=anope2
 # possible values for SERVER_0_ACID: 0, 1 (1 means deployed, 0 otherwise)

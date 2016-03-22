@@ -59,6 +59,12 @@ The syntax of the script is:
 ### Config file
 Explained by the comments within `config.example.sh`.
 
+Note that for each *ircd*, *services*, *acid* and/or *moo* container, you can optionally specify which branch/tag/commit to use for building by adding a variable in the form of `SERVER_x_servicetype_BRANCHCOMMIT` to `config.sh`.
+
+For example: `SERVER_0_ACID_BRANCHCOMMIT='master:32c1e78'`
+
+See `config.example.sh` for more examples and explanations.
+
 ### Examples
 * `./rizon-docker.sh build all`
 * `./rizon-docker.sh create server 1`

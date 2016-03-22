@@ -7,6 +7,9 @@ RUN yum install -y sudo gcc git openssl openssl-devel openssl-libs autogen autoc
 RUN adduser --system --home /var/ircd --shell /bin/bash ircd
 RUN mkdir -p /var/ircd; git clone http://gitlab.com/rizon/plexus.git
 WORKDIR plexus
+RUN git fetch --tags
+#___gitbranch___RUN git checkout ___branch___
+#___gitcommit___RUN git checkout ___commit___
 RUN ./configure --prefix=/var/ircd --enable-openssl
 RUN make; make install; cd contrib; make install
 WORKDIR /var/ircd/etc

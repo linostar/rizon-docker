@@ -5,6 +5,7 @@
 function templater {
 	declare serverlinks="SERVER_${1}_LINKS"
 	declare ishub="SERVER_${1}_HUB"
+	declare gitbranch="SERVER_${1}_IRCD_BRANCHCOMMIT"
 	mkdir -p tmp
 	rm -f tmp/ircd${1}_clines.conf tmp/ircd${1}_info.conf ${2}/Dockerfile
 	touch tmp/ircd${1}_clines.conf
@@ -37,6 +38,14 @@ function templater {
 	if [ $1 -eq 0 ]; then
 		sed -i 's/^#EXPOSE/EXPOSE/' ${2}/Dockerfile
 	fi
+	if [ -n "${!gitbranch}" ]; then
+		BRANCH="${!gitbranch%%:*}"
+		COMMIT="${!gitbranch##*:}"
+		sed -i "s|#___gitbranch___||;s|___branch___|${BRANCH}|" ${2}/Dockerfile
+		if [ -n "$COMMIT" ]; then
+			sed -i "s|#___gitcommit___||;s|___commit___|${COMMIT}|" ${2}/Dockerfile
+		fi
+	fi
 	cp tmp/ircd${1}_info.conf ${2}/
 	cp tmp/ircd${1}_clines.conf ${2}/
 }
@@ -62,7 +71,7 @@ function build {
 		if [ "${!servicestype}" = "anope1" -o "${!servicestype}" = "anope2" ]; then
 			cp config.sh "${!servicestype}/"
 			docker build -t "server_${2}_services" "./${!servicestype}"
-			rm "{$!servicestype}/config.sh"
+			rm "${!servicestype}/config.sh"
 			echo "Container 'server_${2}_services' is built."
 		elif [ -n "${!servicestype}" ]; then
 			echo "Error: container type '${!servicestype}' does not exist."
