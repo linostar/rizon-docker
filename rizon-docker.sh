@@ -1,6 +1,19 @@
 #!/bin/bash
 
 
+# Internal function
+function replace_branchcommit {
+    if [ -n "$1" ]; then
+        BRANCH="${1%%:*}"
+        COMMIT="${1##*:}"
+        sed -i "s|#___gitbranch___||;s|___branch___|${BRANCH}|" ${2}/Dockerfile
+        if [ -n "$COMMIT" ]; then
+            sed -i "s|#___gitcommit___||;s|___commit___|${COMMIT}|" ${2}/Dockerfile
+        fi
+    fi
+}
+
+
 # Internal function for building ircd config from templates. Example: ircd_templater 0 plexus4
 function ircd_templater {
 	declare serverlinks="SERVER_${1}_LINKS"
@@ -38,14 +51,7 @@ function ircd_templater {
 	if [ $1 -eq 0 ]; then
 		sed -i 's/^#EXPOSE/EXPOSE/' ${2}/Dockerfile
 	fi
-	if [ -n "${!gitbranch}" ]; then
-		BRANCH="${!gitbranch%%:*}"
-		COMMIT="${!gitbranch##*:}"
-		sed -i "s|#___gitbranch___||;s|___branch___|${BRANCH}|" ${2}/Dockerfile
-		if [ -n "$COMMIT" ]; then
-			sed -i "s|#___gitcommit___||;s|___commit___|${COMMIT}|" ${2}/Dockerfile
-		fi
-	fi
+	replace_branchcommit ${!gitbranch} $2
 	cp tmp/ircd${1}_info.conf ${2}/
 	cp tmp/ircd${1}_clines.conf ${2}/
 }
@@ -55,14 +61,7 @@ function ircd_templater {
 function services_templater {
 	declare gitbranch="SERVER_${1}_SERVICES_BRANCHCOMMIT"
 	cp -f ${2}/Dockerfile.template ${2}/Dockerfile
-    if [ -n "${!gitbranch}" ]; then
-        BRANCH="${!gitbranch%%:*}"
-        COMMIT="${!gitbranch##*:}"
-        sed -i "s|#___gitbranch___||;s|___branch___|${BRANCH}|" ${2}/Dockerfile
-        if [ -n "$COMMIT" ]; then
-            sed -i "s|#___gitcommit___||;s|___commit___|${COMMIT}|" ${2}/Dockerfile
-        fi
-    fi
+	replace_branchcommit ${!gitbranch} $2
 }
 
 
@@ -70,14 +69,7 @@ function services_templater {
 function servicebot_templater {
 	declare gitbranch="SERVER_${1}_${2^^}_BRANCHCOMMIT"
 	cp -f ${2}/Dockerfile.template ${2}/Dockerfile
-    if [ -n "${!gitbranch}" ]; then
-        BRANCH="${!gitbranch%%:*}"
-        COMMIT="${!gitbranch##*:}"
-        sed -i "s|#___gitbranch___||;s|___branch___|${BRANCH}|" ${2}/Dockerfile
-        if [ -n "$COMMIT" ]; then
-            sed -i "s|#___gitcommit___||;s|___commit___|${COMMIT}|" ${2}/Dockerfile
-        fi
-    fi
+	replace_branchcommit ${!gitbranch} $2
 }
 
 
