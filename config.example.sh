@@ -1,3 +1,6 @@
+# Gitlab SSH private key's file, for accessing private repos such as moo
+export GITLAB_SSH_KEY_FILE=''
+
 # IRCDs and Services root credentials
 export OWNER_NAME=owner
 export OWNER_PASSWORD=ChangeMe123
