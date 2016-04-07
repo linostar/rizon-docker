@@ -418,10 +418,15 @@ function list {
 
 # Example: shell ircd 0
 function _shell {
-	name="server_${2}_${1}"
-	echo "Attaching to shell of '$name'. Press RETURN to start the shell."
-	echo "When you finish, press Ctrl-P Ctrl-Q to detach without stopping the container."
-	docker attach $name
+	echo "ircd services acid moo users" | grep -q "\b$1\b"
+	if [ $? -eq 0 ]; do
+		name="server_${2}_${1}"
+		echo "Attaching to shell of '$name'. Press RETURN to start the shell."
+		echo "When you finish, press Ctrl-P Ctrl-Q to detach without stopping the container."
+		docker attach $name
+	else
+		echo "Error: '$1' is not a valid container type."
+	fi
 }
 
 
