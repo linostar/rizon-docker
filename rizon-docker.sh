@@ -51,7 +51,7 @@ function ircd_templater {
 	if [ $1 -eq 0 ]; then
 		sed -i 's/^#EXPOSE/EXPOSE/' ${2}/Dockerfile
 	fi
-	replace_branchcommit ${!gitbranch} $2
+	replace_branchcommit "${!gitbranch}" $2
 	cp tmp/ircd${1}_info.conf ${2}/
 	cp tmp/ircd${1}_clines.conf ${2}/
 }
@@ -61,7 +61,7 @@ function ircd_templater {
 function services_templater {
 	declare gitbranch="SERVER_${1}_SERVICES_BRANCHCOMMIT"
 	cp -f ${2}/Dockerfile.template ${2}/Dockerfile
-	replace_branchcommit ${!gitbranch} $2
+	replace_branchcommit "${!gitbranch}" $2
 }
 
 
@@ -69,7 +69,7 @@ function services_templater {
 function servicebot_templater {
 	declare gitbranch="SERVER_${1}_${2^^}_BRANCHCOMMIT"
 	cp -f ${2}/Dockerfile.template ${2}/Dockerfile
-	replace_branchcommit ${!gitbranch} $2
+	replace_branchcommit "${!gitbranch}" $2
 }
 
 
