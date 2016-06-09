@@ -1,4 +1,4 @@
-FROM debian:testing
+FROM debian:jessie-backports
 MAINTAINER linostar
 LABEL Description="Configure and run acid bots" \
       Warning="This container depends on external provision files and cannot be built on its own"
@@ -6,7 +6,7 @@ RUN sed -i "s/httpredir.debian.org/ftp.us.debian.org/g" /etc/apt/sources.list
 RUN apt-get update; apt-get upgrade -y
 RUN apt-get install -y -f sudo wget gcc g++ make git mysql-client libmysqld-dev nano mlocate
 RUN apt-get install -y python python-dev libpython-dev python-pip
-RUN apt-get install -y openjdk-7-jdk maven
+RUN apt-get install -y openjdk-8-jdk maven
 RUN update-ca-certificates -f
 RUN adduser --system --home /var/ircd --shell /bin/bash ircd
 RUN rm /bin/sh; ln -s /bin/bash /bin/sh
