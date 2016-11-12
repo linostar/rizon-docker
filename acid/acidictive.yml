@@ -99,6 +99,12 @@ channel:
   # pypsd logging/output channel
   name: py
   channel: "#a"
+ -
+  name: vhost
+  channel: "#vhost"
+ -
+  name: debug
+  channel: "#services"
 
 access_preset:
  -
