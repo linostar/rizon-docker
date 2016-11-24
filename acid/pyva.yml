@@ -25,7 +25,7 @@ clients:
   vhost: services.rizon.net
   name: Network Services Bot
   nspass: moooo
-  modes: ip
+  modes: ipU
   channels: [ py ]
  -
   nick: FunServ

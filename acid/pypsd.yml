@@ -61,6 +61,8 @@ internets:
   key_steam: xxx
   key_google: xxx
   outputlimit: 10
+  maxlinelength: 500
+  yt_parse_delay: 180
 
 limitserv:
   nick: Limitserv
