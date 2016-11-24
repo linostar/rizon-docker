@@ -4,10 +4,11 @@ LABEL Description="Configure and run acid bots" \
       Warning="This container depends on external provision files and cannot be built on its own"
 RUN sed -i "s/httpredir.debian.org/ftp.us.debian.org/g" /etc/apt/sources.list
 RUN apt-get update; apt-get upgrade -y
-RUN apt-get install -y -f sudo wget gcc g++ make git mysql-client libmysqld-dev nano mlocate
+RUN apt-get install -y -f sudo wget gcc g++ make git mysql-client libmysqld-dev nano mlocate libxslt1.1 libxslt1-dev libxml2 libxml2-dev man
 RUN apt-get install -y python python-dev libpython-dev python-pip
 RUN apt-get install -y openjdk-8-jdk maven
 RUN update-ca-certificates -f
+RUN update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
 RUN adduser --system --home /var/ircd --shell /bin/bash ircd
 RUN rm /bin/sh; ln -s /bin/bash /bin/sh
 RUN mkdir -p /var/ircd; git clone http://gitlab.com/rizon/acid.git /var/ircd/acid
@@ -16,8 +17,7 @@ RUN git fetch --tags
 #___gitbranch___RUN git checkout ___branch___
 #___gitcommit___RUN git checkout ___commit___
 RUN git clone http://gitlab.com/rizon/pyva.git pyva/libpyva
-RUN sed -i 's/^py-dom-xpath.*//' pyva/requirements.txt; pip install -U pip; pip install -r pyva/requirements.txt
-RUN wget 'http://py-dom-xpath.googlecode.com/files/py-dom-xpath-0.1.tar.gz'; tar zxf py-dom-xpath-0.1.tar.gz; cd py-dom-xpath-0.1; python setup.py install; cp -rv build/lib.linux-x86_64-2.7/xpath/ /usr/local/lib/python2.7/dist-packages/; cd ..; rm -rf py-dom-xpath*
+RUN pip install -U pip; pip install -r pyva/requirements.txt
 COPY make.properties pyva/libpyva/pyva-native/
 RUN mvn install
 RUN ln -s pyva/libpyva/pyva-native/libpyva.so libpyva.so

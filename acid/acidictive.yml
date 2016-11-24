@@ -87,8 +87,14 @@ database:
   pass: moo
 
 plugins:
- - pyva.core
- - pyva.pyva
+ -
+  groupId: net.rizon
+  artifactId: acid-pyva-core
+  version: 4.1-SNAPSHOT
+ -
+  groupId: net.rizon
+  artifactId: acid-pyva-pyva
+  version: 4.1-SNAPSHOT
 
 channel:
  -
