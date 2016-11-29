@@ -1,14 +1,22 @@
 #!/bin/bash
 
 
+# gnu-sed is named gsed on OSX
+if hash gsed 2>/dev/null; then
+    SED=gsed
+else
+    SED=sed
+fi
+
+
 # Internal function
 function replace_branchcommit {
     if [ -n "$1" ]; then
         BRANCH="${1%%:*}"
         COMMIT="${1##*:}"
-        sed -i "s|#___gitbranch___||;s|___branch___|${BRANCH}|" ${2}/Dockerfile
+        $SED -i "s|#___gitbranch___||;s|___branch___|${BRANCH}|" ${2}/Dockerfile
         if [ -n "$COMMIT" ]; then
-            sed -i "s|#___gitcommit___||;s|___commit___|${COMMIT}|" ${2}/Dockerfile
+            $SED -i "s|#___gitcommit___||;s|___commit___|${COMMIT}|" ${2}/Dockerfile
         fi
     fi
 }
@@ -23,33 +31,33 @@ function ircd_templater {
 	rm -f tmp/ircd${1}_clines.conf tmp/ircd${1}_info.conf ${2}/Dockerfile
 	touch tmp/ircd${1}_clines.conf
 	if [ ${!ishub} -eq 1 ]; then
-		sed 's/^#//g' "${2}/clines.conf.template" > tmp/clines.conf.template
-		sed "s/___is_hub___/yes/" "${2}/server_info.conf.template" > tmp/ircd${1}_info.conf
+		$SED 's/^#//g' "${2}/clines.conf.template" > tmp/clines.conf.template
+		$SED "s/___is_hub___/yes/" "${2}/server_info.conf.template" > tmp/ircd${1}_info.conf
 	else
 		cp "${2}/clines.conf.template" tmp/clines.conf.tempate
-		sed "s/___is_hub___/no/" "${2}/server_info.conf.template" > tmp/ircd${1}_info.conf
+		$SED "s/___is_hub___/no/" "${2}/server_info.conf.template" > tmp/ircd${1}_info.conf
 	fi
-	sed -i "s/___server_index___/${1}/g" tmp/ircd${1}_info.conf
+	$SED -i "s/___server_index___/${1}/g" tmp/ircd${1}_info.conf
 	if [ $1 -eq 0 ]; then
 		# Allow SSL ports in server_0_ircd
-		sed -i 's/^#___ssl___//g' tmp/ircd${1}_info.conf
+		$SED -i 's/^#___ssl___//g' tmp/ircd${1}_info.conf
 	fi
-	for i in `echo ${!serverlinks} | sed 's/,/ /g'`; do
-		sed "s/___server_index___/${i}/g" tmp/clines.conf.template >> tmp/ircd${1}_clines.conf
+	for i in `echo ${!serverlinks} | $SED 's/,/ /g'`; do
+		$SED "s/___server_index___/${i}/g" tmp/clines.conf.template >> tmp/ircd${1}_clines.conf
 	done
-	sed "s/___server_index___/${1}/g" ${2}/Dockerfile.template > ${2}/Dockerfile
+	$SED "s/___server_index___/${1}/g" ${2}/Dockerfile.template > ${2}/Dockerfile
 	if [ $1 -eq 0 -a $SERVER_0_SERVICES != "none" ]; then
-		sed -i "s/___services_included___/services_cline.conf/g" ${2}/Dockerfile
+		$SED -i "s/___services_included___/services_cline.conf/g" ${2}/Dockerfile
 	else
-		sed -i "s/___services_included___//g" ${2}/Dockerfile
+		$SED -i "s/___services_included___//g" ${2}/Dockerfile
 	fi
 	if [ $1 -eq 0 -a $SERVER_0_ACID -eq 1 ]; then
-		sed -i "s/___acid_included___/acid_cline.conf/g" ${2}/Dockerfile
+		$SED -i "s/___acid_included___/acid_cline.conf/g" ${2}/Dockerfile
 	else
-		sed -i "s/___acid_included___//g" ${2}/Dockerfile
+		$SED -i "s/___acid_included___//g" ${2}/Dockerfile
 	fi
 	if [ $1 -eq 0 ]; then
-		sed -i 's/^#EXPOSE/EXPOSE/' ${2}/Dockerfile
+		$SED -i 's/^#EXPOSE/EXPOSE/' ${2}/Dockerfile
 	fi
 	replace_branchcommit "${!gitbranch}" $2
 	cp tmp/ircd${1}_info.conf ${2}/

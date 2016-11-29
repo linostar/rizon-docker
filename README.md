@@ -36,6 +36,8 @@ As the name of the project suggests, the main focus is servers used in Rizon IRC
 
 5. Voilà! Now you can open your favorite irc client, and connect using `/server <your_ip> 666x`, where **x** is the index of the ircd server you want to connect to. The ircd servers in your config file are numbered starting from zero, so the first ircd server is listening on port 6660, the second (if any) on port 6661, and so on.
 
+*Note: If you're on OSX, install `gnu-sed` using [Homebrew](http://brew.sh/)*
+
 ## Full command help for the brave ones
 The syntax of the script is:
 
